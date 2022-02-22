@@ -19,8 +19,7 @@ class TodoFactory extends Factory
             'description' => $this->faker->text(100),
             'completed' => $this->faker->boolean,
             'tag' => $this->faker->randomElement(['TAG1', 'TAG2', 'TAG3']),
-            'created_at' => $this->faker->dateTime,
-            'updated_at' => $this->faker->dateTime,
+            'created_at' => $this->faker->dateTimeBetween('-1 years', 'now', 'America/Sao_Paulo'),
         ];
     }
 }
