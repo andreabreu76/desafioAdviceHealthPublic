@@ -4,12 +4,12 @@ A To-Do List App will have an interactive and responsive interface where you wil
 
 A summary of the requeriments for this project:
 
-- [] Frontend using HTML/CSS/Javascript/jQuery
-- [] Backend build like an API using PHP and MVC concepts
-- [] MySQL
-- [] CRUD for tasks in the To-Do list
-- [] Task completion status
-- [] Grouping list for the tasks (Tag system)
+- [X] Frontend using HTML/CSS/Javascript/jQuery
+- [X] Backend build like an API using PHP and MVC concepts
+- [X] MySQL
+- [X] CRUD for tasks in the To-Do list
+- [X] Task completion status
+- [X] Grouping list for the tasks (Tag system)
 
 # Time to Deliver: 72 hours
 
