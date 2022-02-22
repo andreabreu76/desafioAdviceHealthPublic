@@ -1,7 +1,7 @@
 version: '3.7'
 services:
 
-  # The Application
+  # The Api Server
   api:
     build:
       context: ./docker/
@@ -29,6 +29,7 @@ services:
     networks:
       - net
 
+  # The Vue Server
   app:
     build:
       context: ./docker/
@@ -43,6 +44,8 @@ services:
       - ./app:/home/node/app
     ports:
       - 8080:8080
+    networks:
+      - net
 
   # The Web Server
   web:
@@ -78,6 +81,7 @@ services:
     networks:
       - net
 
+  # The Redis
   redis:
     build:
       context: ./docker/

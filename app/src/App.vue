@@ -19,6 +19,74 @@
     </q-drawer>
 
     <q-page-container>
+      <q-dialog v-model="dialogMode" persistent>
+        <q-card>
+          <q-card-section class="row items-center">
+            <span class="q-ml-sm" v-if="mode == 'view'"> </span>
+            <span class="q-ml-sm" v-if="mode == 'edit'">
+              <q-card class="my-card">
+                <q-toolbar class="bg-purple text-white">
+                  <q-btn flat round dense icon="assignment_ind" />
+                  <q-toolbar-title> Editar </q-toolbar-title>
+                  <q-btn flat round dense icon="mdi-close" @click="onClose" />
+                </q-toolbar>
+                <q-form class="q-gutter-md">
+                  <q-card-section class="row q-col-gutter-md">
+                    <div class="col-12">
+                      <q-input
+                        v-model="todoSelect.name"
+                        :label="'Name'"
+                        outlined
+                      />
+                    </div>
+                    <div class="col-12">
+                      <q-input
+                        v-model="todoSelect.description"
+                        :label="'Description'"
+                        outlined
+                      />
+                    </div>
+                    <div class="col-12">
+                      <q-input
+                        v-model="todoSelect.tag"
+                        :label="'Tag'"
+                        outlined
+                      />
+                    </div>
+                    <div class="col-12">
+                      <q-select
+                        v-model="todoSelect.completed"
+                        :label="'Completed'"
+                        outlined
+                        :options="[
+                          { label: 'Completo', value: 1 },
+                          { label: 'Incompleto', value: 0 },
+                        ]"
+                        option-label="label"
+                        option-value="value"
+                      />
+                    </div>
+                  </q-card-section>
+                  <div>
+                    <q-btn label="Submit" type="submit" color="primary" />
+                    <q-btn
+                      label="Reset"
+                      type="reset"
+                      color="primary"
+                      flat
+                      class="q-ml-sm"
+                    />
+                  </div>
+                </q-form>
+              </q-card>
+            </span>
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn flat label="Cancel" color="primary" v-close-popup />
+            <q-btn flat label="Turn on Wifi" color="primary" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
       <q-page>
         <q-table
           title="TODO LIST"
@@ -36,7 +104,7 @@
                 round
                 icon="mdi-eye"
                 color="primary"
-                @click="infoTodo(props.row)"
+                @click="openDialog(props.row, 'view')"
               />
               <q-btn
                 :props="props"
@@ -45,7 +113,7 @@
                 round
                 icon="mdi-pencil"
                 color="primary"
-                @click="editTodo(props.row)"
+                @click="openDialog(props.row, 'edit')"
               />
               <q-btn
                 :props="props"
@@ -101,13 +169,13 @@ export default {
           sortable: true,
           align: "left",
         },
-        {
-          name: "description",
-          label: "Descrição",
-          field: "description",
-          sortable: true,
-          align: "left",
-        },
+        // {
+        //   name: "description",
+        //   label: "Descrição",
+        //   field: "description",
+        //   sortable: true,
+        //   align: "left",
+        // },
         {
           name: "completed",
           label: "Feito",
@@ -146,7 +214,15 @@ export default {
           align: "right",
         },
       ],
+      mode: null,
+      todoSelect: null,
     };
+  },
+
+  computed: {
+    dialogMode() {
+      return this.mode ? true : false;
+    },
   },
 
   methods: {
@@ -188,10 +264,15 @@ export default {
       }
     },
 
+    openDialog(infoItem, mode) {
+      this.mode = mode;
+      this.todoSelect = infoItem;
+    },
+
     async todoShow() {
       try {
         const { data, status } = await axios.get(
-          "http://localhost:9000/api/todos" + id
+          "http://localhost:9000/api/todos"
         );
         if (status === 200) this.todo = data;
       } catch (error) {
