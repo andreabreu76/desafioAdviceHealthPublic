@@ -2,14 +2,20 @@ version: '3.7'
 services:
 
   # The Application
-  app:
+  api:
     build:
       context: ./docker/
-      dockerfile: app.dockerfile
-    image: app-advicehealth
-    container_name: advicehealth-app
+      dockerfile: api.dockerfile
+    image: api-advicehealth
+    container_name: advicehealth-api
     tty: true
     working_dir: /var/www
+    command:
+      [
+        'bash',
+        '-c',
+        'php artisan serve --host=0.0.0.0 --port=9000'
+      ]
     volumes:
       - ./src/:/var/www
     environment:
@@ -18,8 +24,25 @@ services:
       TZ: 'America/Sao_Paulo'
       PHP_REDIS_SESSION_HOST: 'redis'
       CREATE_LARAVEL_STORAGE: '1'
+    ports:
+      - 9000:9000
     networks:
       - net
+
+  app:
+    build:
+      context: ./docker/
+      dockerfile: app.dockerfile
+    image: app-advicehealth
+    container_name: advicehealth-app
+    working_dir: /home/node/app
+    command: [ 'bash', '-c', 'yarn serve' ]
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./app:/home/node/app
+    ports:
+      - 8080:8080
 
   # The Web Server
   web:
@@ -31,7 +54,7 @@ services:
     tty: true
     working_dir: /var/www
     ports:
-      - 8086:80
+      - 80:80
     networks:
       - net
 

@@ -18,9 +18,12 @@ class TodoController extends Controller
 
     public function index(): JsonResponse
     {
-        return response()->json([
-            'data' => $this->todoRepository->getAllTodos()
-        ]);
+        return response()->json($this->todoRepository->getAllTodos());
+    }
+
+    public function indexTag(): JsonResponse
+    {
+        return response()->json($this->todoRepository->getAllTodos()->groupBy('tag'));
     }
 
     public function store(Request $request): JsonResponse
@@ -31,21 +34,14 @@ class TodoController extends Controller
             'completed',
         ]);
 
-        return response()->json(
-            [
-                'data' => $this->TodoRepository->createTodo($todoDetails)
-            ],
-            Response::HTTP_CREATED
-        );
+        return response()->json($this->TodoRepository->createTodo($todoDetails), Response::HTTP_CREATED);
     }
 
     public function show(Request $request): JsonResponse
     {
         $todoId = $request->route('id');
 
-        return response()->json([
-            'data' => $this->todoRepository->getTodoById($todoId)
-        ]);
+        return response()->json($this->todoRepository->getTodoById($todoId));
     }
 
     public function update(Request $request): JsonResponse
@@ -57,9 +53,7 @@ class TodoController extends Controller
             'completed',
         ]);
 
-        return response()->json([
-            'data' => $this->todoRepository->updateTodo($todoId, $todoDetails)
-        ]);
+        return response()->json($this->todoRepository->updateTodo($todoId, $todoDetails));
     }
 
     public function destroy(Request $request): JsonResponse
