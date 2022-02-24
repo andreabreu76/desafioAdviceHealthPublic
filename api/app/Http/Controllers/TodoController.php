@@ -31,10 +31,13 @@ class TodoController extends Controller
         $todoDetails = $request->only([
             'name',
             'description',
+            'tag',
             'completed',
         ]);
 
-        return response()->json($this->TodoRepository->createTodo($todoDetails), Response::HTTP_CREATED);
+        $result = $this->todoRepository->createTodo($todoDetails);
+
+        return response()->json($result, Response::HTTP_CREATED);
     }
 
     public function show(Request $request): JsonResponse

@@ -1,3 +1,4 @@
+
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated class="glossy">
@@ -21,75 +22,65 @@
     <q-page-container>
       <q-dialog v-model="dialogMode" persistent>
         <q-card>
-          <q-card-section class="row items-center">
-            <span class="q-ml-sm" v-if="mode == 'view'"> </span>
-            <span class="q-ml-sm" v-if="mode == 'edit'">
-              <q-card class="my-card">
-                <q-toolbar class="bg-purple text-white">
-                  <q-btn flat round dense icon="assignment_ind" />
-                  <q-toolbar-title> Editar </q-toolbar-title>
-                  <q-btn flat round dense icon="mdi-close" @click="onClose" />
-                </q-toolbar>
-                <q-form class="q-gutter-md">
-                  <q-card-section class="row q-col-gutter-md">
-                    <div class="col-12">
-                      <q-input
-                        v-model="todoSelect.name"
-                        :label="'Name'"
-                        outlined
-                      />
-                    </div>
-                    <div class="col-12">
-                      <q-input
-                        v-model="todoSelect.description"
-                        :label="'Description'"
-                        outlined
-                      />
-                    </div>
-                    <div class="col-12">
-                      <q-input
-                        v-model="todoSelect.tag"
-                        :label="'Tag'"
-                        outlined
-                      />
-                    </div>
-                    <div class="col-12">
-                      <q-select
-                        v-model="todoSelect.completed"
-                        :label="'Completed'"
-                        outlined
-                        :options="[
-                          { label: 'Completo', value: 1 },
-                          { label: 'Incompleto', value: 0 },
-                        ]"
-                        option-label="label"
-                        option-value="value"
-                      />
-                    </div>
-                  </q-card-section>
-                  <div>
-                    <q-btn label="Submit" type="submit" color="primary" />
-                    <q-btn
-                      label="Reset"
-                      type="reset"
-                      color="primary"
-                      flat
-                      class="q-ml-sm"
-                    />
-                  </div>
-                </q-form>
-              </q-card>
-            </span>
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="Cancel" color="primary" v-close-popup />
-            <q-btn flat label="Turn on Wifi" color="primary" v-close-popup />
-          </q-card-actions>
+          <q-toolbar class="bg-primary text-white">
+            <q-btn flat round dense icon="assignment_ind" />
+            <q-toolbar-title>
+              {{ todoSelect ? "Editar" : "Cadastrar" }}
+            </q-toolbar-title>
+            <q-btn flat round dense icon="mdi-close" @click="mode = null" />
+          </q-toolbar>
+
+          <q-form @submit="onSubmit" @reset="onReset">
+            <q-card-section class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input v-model="form.name" :label="'Name'" outlined />
+              </div>
+              <div class="col-12">
+                <q-input
+                  v-model="form.description"
+                  :label="'Description'"
+                  outlined
+                />
+              </div>
+              <div class="col-12">
+                <q-input v-model="form.tag" :label="'Tag'" outlined />
+              </div>
+              <div class="col-12">
+                <q-select
+                  v-model="form.completed"
+                  :label="'Completed'"
+                  outlined
+                  :options="[
+                    { label: 'Completo', value: 1 },
+                    { label: 'Incompleto', value: 0 },
+                  ]"
+                />
+              </div>
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn label="Salvar" uneleved type="submit" color="primary" />
+              <q-btn
+                label="Cancelar"
+                type="reset"
+                color="primary"
+                flat
+                class="q-ml-sm"
+              />
+            </q-card-actions>
+          </q-form>
         </q-card>
       </q-dialog>
       <q-page>
+        <q-toolbar class="bg-white text-primary q-my-md">
+          <q-toolbar-title> Toolbar </q-toolbar-title>
+          <q-btn
+            color="primary"
+            icon="mdi-plus"
+            label="Adicionar"
+            @click="openDialog()"
+          />
+        </q-toolbar>
         <q-table
-          title="TODO LIST"
           :data="todo"
           row-key="id"
           :columns="columns"
@@ -98,16 +89,6 @@
           <template v-slot:body-cell-id="props">
             <q-td :props="props">
               <q-btn
-                :props="props"
-                flat
-                dense
-                round
-                icon="mdi-eye"
-                color="primary"
-                @click="openDialog(props.row, 'view')"
-              />
-              <q-btn
-                :props="props"
                 flat
                 dense
                 round
@@ -116,7 +97,6 @@
                 @click="openDialog(props.row, 'edit')"
               />
               <q-btn
-                :props="props"
                 flat
                 dense
                 round
@@ -169,13 +149,7 @@ export default {
           sortable: true,
           align: "left",
         },
-        // {
-        //   name: "description",
-        //   label: "Descrição",
-        //   field: "description",
-        //   sortable: true,
-        //   align: "left",
-        // },
+
         {
           name: "completed",
           label: "Feito",
@@ -216,6 +190,12 @@ export default {
       ],
       mode: null,
       todoSelect: null,
+      form: {
+        name: "",
+        description: "",
+        tag: "",
+        completed: { label: "Incompleto", value: 0 },
+      },
     };
   },
 
@@ -226,6 +206,42 @@ export default {
   },
 
   methods: {
+    onReset() {
+      this.form.name = "";
+      this.form.description = "";
+      this.form.tag = "";
+      this.form.completed = { label: "Incompleto", value: 0 };
+      this.mode = null;
+    },
+    onSubmit() {
+      if (this.mode == "edit") {
+        axios
+          .put(`http://localhost:9000/api/todos/${this.todoSelect.id}`, {
+            ...this.form,
+            completed: this.form.completed.value,
+          })
+          .then((response) => {
+            this.todoSelect = response.data;
+            this.mode = null;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        axios
+          .post("http://localhost:9000/api/todos", {
+            ...this.form,
+            completed: this.form.completed.value,
+          })
+          .then((response) => {
+            this.todo.push(response.data);
+            this.mode = null;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
     async todoList() {
       try {
         const { data, status } = await axios.get(
@@ -264,9 +280,18 @@ export default {
       }
     },
 
-    openDialog(infoItem, mode) {
+    openDialog(infoItem = "", mode = "create") {
       this.mode = mode;
       this.todoSelect = infoItem;
+      this.form.name = infoItem.name;
+
+      this.form.description = infoItem.description;
+      this.form.tag = infoItem.tag;
+      this.form.completed = {
+        label: infoItem.completed ? "Completo" : "Incompleto",
+        value: infoItem.completed,
+      };
+      console.log(infoItem);
     },
 
     async todoShow() {
@@ -279,30 +304,6 @@ export default {
         console.log(error);
       }
     },
-
-    // async todoCreate() {
-    //   try {
-    //     const { data, status } = await axios.post(
-    //       "http://localhost:9000/api/todos",
-    //       data
-    //     );
-    //     if (status === 200) this.todo = data;
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // },
-
-    // async todoEdit() {
-    //   try {
-    //     const { data, status } = await axios.put(
-    //       "http://localhost:9000/api/todos",
-    //       data
-    //     );
-    //     if (status === 200) this.todo = data;
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // },
   },
 
   created() {
