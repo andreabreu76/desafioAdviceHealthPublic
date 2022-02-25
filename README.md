@@ -22,7 +22,7 @@ cd desafioAdviceHealth/api && composer install
 ``` 
 
 ```bash
-cp .evn.example .env
+cp .env.example .env
 ```
 
 ```bash
@@ -30,7 +30,7 @@ docker-compose up -d
 ```
 
 ```bash
-docker exec -it advicehealth_api php artisan config:clear
+docker exec -it advicehealth-api php artisan config:clear
 ```
 
 ```bash
@@ -38,7 +38,7 @@ docker exec -it advicehealth_api php artisan key:generate
 ```
 
 ```bash
-docker exec -it advicehealth_api php artisan migration --seed
+docker exec -it advicehealth_api php artisan migrate --seed
 ```
 
 ```bash
