@@ -8,7 +8,7 @@ git clone https://github.com/andreabreu76/desafioAdviceHealth desafioAdviceHealt
 
 ### APP - Frontend
 ```bash
-cd desafioAdviceHealth/app  && docker exec -it advicehealth_api php artisan key:generate
+cd desafioAdviceHealth/app  && npm install
 ```
 
 ```bash
@@ -45,3 +45,13 @@ docker exec -it advicehealth_api php artisan migration --seed
 docker exec -it advicehealth_api php artisan optimize
 ```
 
+```bash
+cd ../../
+```
+
+```bash
+chown -R $USER:$USER desafioAdviceHealth/
+```
+
+
+Enjoy!
