@@ -61,11 +61,11 @@ Frontend: http://localhost
 
 Backend: 
 
-- List All/GET: http://localhost:9000/api/todos
-- List One/GET: http://localhost:9000/api/todos/{id}
-- Create/POST: http://localhost:9000/api/todos
-- Update/PUT: http://localhost:9000/api/todos/{id}
-- Delete/Delete: http://localhost:9000/api/todos/{id}
+- List All/GET: http://localhost/srv/api/todos
+- List One/GET: http://localhost/srv/api/todos/{id}
+- Create/POST: http://localhost/srv/api/todos
+- Update/PUT: http://localhost/srv/api/todos/{id}
+- Delete/Delete: http://localhost/srv/api/todos/{id}
 
 
 
